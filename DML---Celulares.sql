@@ -328,3 +328,152 @@ right join Fabricante f ON p.codigo_fabricante = f.codigo
 where p.codigo_fabricante IS NULL;
 /*---3---*/
 /*Si se puede, por que uno podria añadir lo que quiera en ese tabla pero para continuar con el mismo esquema la tabla quedaria incompleta y la db tambien*/
+
+/*1.1.6 Consultas resumen */
+
+/*---1---*/
+SELECT COUNT(*) AS total_productos FROM producto;
+/*---2---*/
+SELECT COUNT(*) AS total_fabricantes FROM fabricante;
+/*---3---*/
+SELECT COUNT(DISTINCT codigo_fabricante) AS fabricantes_en_productos FROM producto;
+/*---4---*/
+SELECT AVG(precio) AS precio_medio FROM producto;
+/*---5---*/
+SELECT MIN(precio) AS precio_minimo FROM producto;
+/*---6---*/
+SELECT MAX(precio) AS precio_maximo FROM producto;
+/*---7---*/
+SELECT nombre, precio FROM producto ORDER BY precio ASC LIMIT 1;
+/*---8---*/
+SELECT nombre, precio FROM producto ORDER BY precio DESC LIMIT 1;
+/*---9---*/
+SELECT SUM(precio) AS suma_precios FROM producto;
+/*---10---*/
+SELECT COUNT(*) AS productos_asus FROM producto WHERE codigo_fabricante = (SELECT codigo FROM fabricante WHERE nombre = 'Asus');
+/*---11---*/
+SELECT AVG(precio) AS media_precio_asus FROM producto WHERE codigo_fabricante = (SELECT codigo FROM fabricante WHERE nombre = 'Asus');
+/*---12---*/
+SELECT MIN(precio) AS precio_min_asus FROM producto WHERE codigo_fabricante = (SELECT codigo FROM fabricante WHERE nombre = 'Asus');
+/*---13---*/
+SELECT MAX(precio) AS precio_max_asus FROM producto WHERE codigo_fabricante = (SELECT codigo FROM fabricante WHERE nombre = 'Asus');
+/*---14---*/
+SELECT SUM(precio) AS suma_precios_asus FROM producto WHERE codigo_fabricante = (SELECT codigo FROM fabricante WHERE nombre = 'Asus');
+/*---15---*/
+SELECT MAX(precio) AS precio_max, MIN(precio) AS precio_min, AVG(precio) AS precio_medio, COUNT(*) AS total_productos FROM producto WHERE codigo_fabricante = (SELECT codigo FROM fabricante WHERE nombre = 'Crucial');
+/*---16---*/
+SELECT f.nombre, COUNT(p.codigo) AS total_productos FROM fabricante f;
+/*---3---*/
+
+/*---3---*/
+
+/*---3---*/
+
+/*---3---*/
+
+/*---3---*/
+/*---3---*/
+/*---3---*/
+/*---3---*/
+/*---3---*/
+/*---3---*/
+/*1.1.7.1 Con operadores básicos de comparación */
+/*---1---*/
+select 
+	nombre as "productos del fabricante",
+    codigo_fabricante as "codigo fabricante"
+from producto where codigo_fabricante = 2;
+/*---2---*/
+select * from producto where precio = 559;
+/*---3---*/
+SELECT MAX(precio) FROM producto WHERE codigo_fabricante = 2;
+/*---4---*/
+SELECT MIN(precio) FROM producto WHERE codigo_fabricante = 3;
+/*---5---*/
+select * from producto where precio >= 559;
+/*---6---*/
+SELECT avg(precio) FROM producto WHERE codigo_fabricante = 1;
+
+/*1.1.7.2 Subconsultas con ALL y ANY */
+/*---7---*/
+SELECT *
+FROM producto
+WHERE precio >= ALL (
+    SELECT precio
+    FROM producto
+);
+/*---8---*/
+SELECT * FROM producto
+WHERE precio <= ALL (
+    SELECT precio
+    FROM producto
+);
+/*---9---*/
+SELECT nombre,
+codigo
+FROM fabricante
+WHERE codigo = ANY (
+    SELECT codigo_fabricante
+    FROM producto
+);
+/*---10---*/
+SELECT nombre,
+codigo
+FROM fabricante
+WHERE codigo <> All (
+    SELECT codigo_fabricante
+    FROM producto
+);
+/*1.1.7.3 Subconsultas con IN y NOT IN*/
+/*---11---*/
+SELECT nombre
+FROM fabricante
+WHERE codigo IN (
+    SELECT codigo_fabricante
+    FROM producto
+);
+/*---12---*/
+SELECT nombre
+FROM fabricante
+WHERE codigo not IN (
+    SELECT codigo_fabricante
+    FROM producto
+);
+/*1.1.7.4 Subconsultas con EXISTS y NOT EXISTS */
+/*---13---*/
+SELECT nombre
+FROM fabricante f
+WHERE EXISTS (
+    SELECT 1
+    FROM producto p
+    WHERE p.codigo_fabricante = f.codigo
+);
+/*---14---*/
+SELECT nombre
+FROM fabricante f
+WHERE not EXISTS (
+    SELECT 1
+    FROM producto p
+    WHERE p.codigo_fabricante = f.codigo
+);
+/*1.1.7.5 Subconsultas correlacionadas*/ 
+/*---15---*/
+SELECT f.nombre AS fabricante,
+       p.nombre AS producto,
+       p.precio
+FROM fabricante f
+JOIN producto p ON p.codigo_fabricante = f.codigo
+WHERE p.precio = (
+    SELECT MAX(p2.precio)
+    FROM producto p2
+    WHERE p2.codigo_fabricante = f.codigo
+);
+/*---16---*/
+SELECT *
+FROM producto p1
+WHERE p1.precio >= (
+    SELECT AVG(p2.precio)
+    FROM producto p2
+    WHERE p2.codigo = p1.codigo
+);
+/*---17---*/
