@@ -22,6 +22,7 @@ call datosp("Impresora HP Laserjet Pro M26nw", 180, 3);
 
 select * from fabricante;
 select * from producto;
+/*---Consultas sobre una tabla---*/
 /*---1---*/
 select nombre from producto;
 /*---2---*/
@@ -99,10 +100,231 @@ select nombre, precio from producto order by precio desc limit 1;
 select nombre from producto 
 where codigo_fabricante = 2;
 /*---21---*/
+SELECT 
+    nombre as "nombre de producto",
+    ROUND(precio * 0.93, 2) AS euros
+FROM producto where precio <= 120;
 /*---22---*/
+SELECT 
+    nombre as "nombre de producto",
+    ROUND(precio * 0.93, 2) AS euros
+FROM producto where precio >= 400;
 /*---23---*/
+SELECT 
+    nombre as "nombre de producto",
+    ROUND(precio * 0.93, 2) AS euros
+FROM producto where precio > 400;
 /*---24---*/
+SELECT 
+    nombre as "nombre de producto",
+    ROUND(precio * 0.93, 2) AS euros
+FROM producto where precio >= 80 and precio <= 300;
 /*---25---*/
+/*BETWEEN es para filtrar entre un rango especifico de valores*/
+SELECT 
+    nombre as "nombre de producto",
+    ROUND(precio * 0.93, 2) AS euros
+FROM producto where precio >= 80 and precio <= 300;
 /*---26---*/
+SELECT 
+    nombre as "nombre de producto",
+    ROUND(precio * 0.93, 2) AS euros,
+    codigo_fabricante as "codigo fabricante"
+FROM producto where precio >= 80 and codigo_fabricante = 6;
 /*---27---*/
+select 
+	nombre as "nombre de producto",
+    codigo_fabricante as "codigo fabricante"
+from producto where codigo_fabricante = 1 or codigo_fabricante = 3 or codigo_fabricante = 5;
 /*---28---*/
+select
+	nombre as "nombre de producto",
+    codigo_fabricante as "codigo fabricante"
+from producto where codigo_fabricante in (1,3,5); 
+/*---29---*/
+SELECT 
+    nombre as "nombre de producto",
+    ROUND(precio * 0.93, 2) AS euros,
+    round(precio * 100,2) as centimos
+FROM producto;
+/*---30---*/
+SELECT 
+    nombre as "nombre de producto"
+from fabricante where nombre like "S%";
+/*---31---*/
+SELECT 
+    nombre as "nombre de producto"
+from fabricante where nombre like "%e";
+/*---32---*/
+SELECT 
+    nombre as "nombre de producto"
+from fabricante where nombre like "%w%";
+/*---33---*/
+SELECT 
+    nombre as "nombre de producto"
+from fabricante where LENGTH(nombre) = 4;
+/*---34---*/
+SELECT 
+    nombre as "nombre de producto"
+from producto where nombre like "%Portátil%";
+/*---35---*/
+SELECT 
+    nombre as "nombre de producto",
+     ROUND(precio * 0.93, 2) AS euros
+from producto where nombre like "%Monitor%" and precio < 215;
+/*1.1.4 consultas multitabla (Composición interna)*/
+/*---1---*/
+select
+p.nombre AS "nombre producto",
+p.precio,
+f.nombre AS "nombre fabricante"
+from
+Producto p
+join
+Fabricante f ON p.codigo_fabricante = f.codigo;
+/*---2---*/
+select p.nombre AS "nombre producto",
+p.precio,
+f.nombre AS "nombre fabricante"
+from
+Producto p
+join
+Fabricante f ON p.codigo_fabricante = f.codigo
+order by
+f.nombre ASC;
+/*---3---*/
+select
+    p.codigo_fabricante as "codigo fabricante",
+    p.nombre AS "nombre producto",
+    f.codigo,
+    f.nombre AS "nombre fabricante"
+from
+    Producto p
+join
+    Fabricante f ON p.codigo_fabricante = f.codigo;
+/*---4---*/
+select nombre, precio, codigo_fabricante
+from producto
+order by precio ASC;
+/*--5--*/
+select 
+	p.nombre as Producto, 
+	p.precio, 
+	f.nombre as fabricante
+from producto p
+join fabricante f on p.codigo_fabricante = f.codigo order by p.precio desc;
+/*---6---*/
+select p.codigo_fabricante as "codigo fabricante",
+p.nombre AS "nombre producto",
+f.codigo,
+f.nombre AS "nombre fabricante"
+from
+Producto p
+join
+Fabricante f ON p.codigo_fabricante = f.codigo
+where
+f.nombre = 'Lenovo';
+/*---7---*/
+select
+p.nombre AS "nombre producto",
+p.precio,
+f.nombre AS "nombre fabricante"
+from
+Producto p
+join
+Fabricante f ON p.codigo_fabricante = f.codigo
+where
+p.precio > 200;
+/*---8---*/
+select
+p.nombre AS "nombre producto",
+f.nombre AS "nombre fabricante"
+from
+Producto p
+join
+Fabricante f ON p.codigo_fabricante = f.codigo
+where
+f.nombre = 'Asus' OR f.nombre = 'Hewlett-Packard' OR f.nombre = 'Seagate';
+
+/*---9---*/
+select
+p.nombre AS "nombre producto",
+f.nombre AS "nombre fabricante"
+from
+Producto p
+join
+Fabricante f ON p.codigo_fabricante = f.codigo
+where
+f.nombre IN ('Asus', 'Hewlett-Packard', 'Seagate');
+
+/*---10---*/
+select
+p.nombre as "nombre producto",
+p.precio,
+f.nombre as "nombre fabricante"
+from
+Producto p
+join
+Fabricante f on p.codigo_fabricante = f.codigo
+where
+f.nombre like '%e';
+
+/*---11---*/
+select
+p.nombre as "nombre producto",
+p.precio,
+f.nombre as"nombre fabricante"
+from
+Producto p
+join
+Fabricante f on p.codigo_fabricante = f.codigo
+where
+f.nombre LIKE '%w%';
+
+/*---12---*/
+select p.nombre AS "nombre producto",
+p.precio,
+f.nombre AS "nombre fabricante"
+from Producto p
+join Fabricante f ON p.codigo = f.codigo
+where p.precio >= 180
+order by p.precio desc,
+p.nombre asc;
+
+/*---13---*/
+select distinct f.codigo,
+f.nombre AS "nombre fabricante"
+from Fabricante f
+join Producto p on f.codigo = p.codigo_fabricante;
+/*1.1.5 Consultas multitabla(Composicion externa)*/
+/*---1---*/
+select f.codigo,
+f.nombre as "nombre fabricante",
+p.codigo_fabricante,
+p.nombre as "nombre producto"
+from Fabricante f
+left join
+Producto p on f.codigo = p.codigo_fabricante;
+select f.codigo,
+f.nombre as "nombre fabricante",
+p.codigo_fabricante as "codigo fabricante",
+p.nombre as "nombre producto"
+from Producto p
+right join
+Fabricante f on p.codigo_fabricante = f.codigo;
+/*---2---*/
+select f.codigo,
+f.nombre as "nombre fabricante"
+from Fabricante f
+left join Producto p on f.codigo = p.codigo_fabricante
+where
+p.codigo_fabricante is null;
+select
+f.codigo,
+f.nombre AS "nombre fabricante"
+from
+Producto p
+right join Fabricante f ON p.codigo_fabricante = f.codigo
+where p.codigo_fabricante IS NULL;
+/*---3---*/
+/*Si se puede, por que uno podria añadir lo que quiera en ese tabla pero para continuar con el mismo esquema la tabla quedaria incompleta y la db tambien*/
